@@ -69,7 +69,7 @@ public class RegisterAction implements IAction {
         String EMAIL = request.getParameter("EMAIL");
         String PASSWORD = request.getParameter("PASS");
 
-        logUser.loginUser(EMAIL, PASSWORD);
+        logUser.loginUser (EMAIL, PASSWORD);
 
         String jsonResponse = "{\"accountLogged\":" + logUser.isUserLogged() + ", \"isEmployee\":" + logUser.isEmployee() + "}";
 

@@ -46,9 +46,10 @@ public class CreateProduct {
 
         try {
             if (resultSet.next()) {
-                System.out.println("Product creation failed ");
+                System.out.println("Product creation succesfully" );
                 motor.disconnect();
             } else {
+                System.out.println("Product creation failed");
                 productCreated = true;
             }
         } catch (SQLException ex) {
