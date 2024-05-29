@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller.action;
 
 import java.io.IOException;
@@ -12,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import model.RegisterEmployee;
 import model.CreateCategory;
 import model.CreateProduct;
+import model.UpdateProduct;
 import model.DeleteProduct;
 import model.DeleteUser;
 import model.RefreshOrder;
@@ -52,6 +48,10 @@ public class IntranetActionManager implements IAction {
                 cadDestino = createProduct(request, response);
                 break;
 
+            case "UPDATEPRODUCT":
+                cadDestino = updateProduct(request, response);
+                break;
+
             case "REFRESHPRODUCTS":
                 cadDestino = refreshProduct(request, response);
                 break;
@@ -60,9 +60,10 @@ public class IntranetActionManager implements IAction {
                 deleteProduct(request, response);
                 cadDestino = refreshProduct(request, response);
                 break;
+
             case "REFRESHORDER":
-                //refreshOrder(request, response);
                 cadDestino = refreshOrder(request, response);
+                break;
         }
         return cadDestino;
     }
@@ -135,6 +136,20 @@ public class IntranetActionManager implements IAction {
         creProduct.createProduct(categoryName, productName, price, productUrl);
 
         String jsonResponse = "{\"ProductCreated\":" + creProduct.isProductCreated() + "}";
+
+        return jsonResponse;
+    }
+
+    public String updateProduct(HttpServletRequest request, HttpServletResponse response) {
+        String strRet = "{\"RESULT\":\"OK\"}";
+        UpdateProduct updProduct = new UpdateProduct();
+        String categoryName = request.getParameter("CATEGORYNAME");
+        String productName = request.getParameter("PRODUCTNAME");
+        String price = request.getParameter("PRICE");
+        String productUrl = request.getParameter("PRODUCTURL");
+        updProduct.updateProduct(categoryName, productName, price, productUrl);
+
+        String jsonResponse = "{\"ProductUpdated\":" + updProduct.hashCode() + "}";
 
         return jsonResponse;
     }

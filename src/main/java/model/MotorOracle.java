@@ -2,6 +2,7 @@ package model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,18 +18,15 @@ public class MotorOracle {
 
     public void connect() {
         try {
-
             Class.forName("oracle.jdbc.driver.OracleDriver");
             conn = DriverManager.getConnection(URL, USER, PASS);
-
             st = conn.createStatement();
-            //} catch (ClassNotFoundException ex) {
-            // System.out.println(ex.getMessage());
-        }
-        catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -37,7 +35,17 @@ public class MotorOracle {
         try {
             resp = st.executeUpdate(sql);
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+        return resp;
+    }
+
+    public int executeUpdate(String sql) {
+        int resp = 0;
+        try {
+            resp = st.executeUpdate(sql);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return resp;
     }
@@ -46,7 +54,7 @@ public class MotorOracle {
         try {
             rs = st.executeQuery(sql);
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
         return rs;
     }
@@ -63,6 +71,36 @@ public class MotorOracle {
                 conn.close();
             }
         } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public boolean checkIfProductExists(String productId) {
+        String query = "SELECT COUNT(*) FROM PRODUCTS WHERE PRODUCT_ID = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, productId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    public void updateProduct(String productId, String categoryName, String productName, String price, String productUrl) {
+        String updateQuery = "UPDATE PRODUCTS SET CATEGORY_NAME = ?, PRODUCT_NAME = ?, PRICE = ?, PRODUCTURL = ? WHERE PRODUCT_ID = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(updateQuery)) {
+            pstmt.setString(1, categoryName);
+            pstmt.setString(2, productName);
+            pstmt.setString(3, price);
+            pstmt.setString(4, productUrl);
+            pstmt.setString(5, productId);
+            pstmt.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
     }
 }
